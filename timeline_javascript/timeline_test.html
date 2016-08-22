@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Timeline | Basic demo</title>
+
+  <style type="text/css">
+    body, html {
+      font-family: sans-serif;
+    }
+  </style>
+  <link href="vis/vis.css" rel="stylesheet" type="text/css"/>
+  <script src="vis/vis.js"></script>
+  <script src="papaparse.js"></script>
+  <script src="//code.jquery.com/jquery.min.js"></script>
+</head>
+<body>
+
+<h1>username1</h1>
+<div id="visualization_1"><div>
+<div id="txtOutput"><div>
+
+<input type="file" id="files" name="files[]" multiple />
+<output id="list"></output>
+
+<script>
+
+  var container = document.getElementById('visualization_1');
+
+  function make_timeline(result) {
+  	var groups = new vis.DataSet();
+	var items = new vis.DataSet();
+	var i;
+	var len = result.data.length;
+	for(i = 0; i < 1000; i++) {
+		var dest = result.data[i]['Destination'];
+		var temp = groups.get(dest);
+		if(temp == null) {
+			groups.add({id: dest, content: dest});
+		}
+		console.log(dest);
+		items.add({id: i, group: dest, content: result.data[i]['Source'], start: result.data[i]['Date Time']});	
+	}
+
+	// Configuration for the Timeline
+	// specify options
+  	var options = {
+    	editable: true,
+  	};
+
+  	// Create a Timeline
+  	var timeline1 = new vis.Timeline(container);
+  	timeline1.setOptions(options);
+  	timeline1.setGroups(groups);
+  	timeline1.setItems(items);
+  }
+
+  function handleFileSelect(evt) {
+    var file = evt.target.files[0];
+
+    Papa.parse(file, {
+      header: true,
+      dynamicTyping: true,
+      complete: function(results) {
+  	console.log(results);
+	make_timeline(results);
+      }
+    });
+  }
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+</script>
+</div>
+
+</body>
+</html>
